@@ -1,5 +1,5 @@
 .container {
-  min-width: 500px;
+  min-width: 800px;
   width: 80%;
 }
 
@@ -25,7 +25,23 @@
   margin: 0.4rem;
   padding: 0.3rem;
   text-align: left;
+}
+
+.results-title {
   color: #09f09C;
+}
+
+.results-date {
+  font-size: smaller;
+  color: #333033;
+}
+
+.results-tags {
+  background-color: red;
+}
+
+input[type='text'] {
+  padding: 0.3rem;
 }
 
 input[type='submit'] {
