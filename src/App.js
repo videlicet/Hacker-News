@@ -4,41 +4,40 @@ import React, { useEffect, useState } from 'react';
 function App() {
   const [news, setNews] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const getData = (searchTerm) => {
-    fetch('./hackernews.json'
-    ,{
-      headers : { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-       }
-    }
-    )
-      .then(function(response){
+    fetch(`http://hn.algolia.com/api/v1/search?query=${searchTerm}`)
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error(
+            `This is an HTTP error: The status is ${response.status}`
+          );
+        }
         console.log(response)
         return response.json();
       })
       .then(function(myJson) {
         console.log(myJson);
-        if (searchTerm) {
-          const filteredHits = myJson.hits.filter((newsItem) => newsItem.title.match(searchTerm) || newsItem.title.toLowerCase().match(searchTerm.toLowerCase()));
-          if (filteredHits.length !== 0) {
-            myJson.hits= filteredHits;
-            setNews(myJson);
-          } else {
-            console.log('Nothing found')
-            setNews({hits: [{title: `No match for ${searchTerm}`}]});
-          }
-        } else {
+        if (myJson.hits.length !== 0) {
           setNews(myJson);
+        } else {
+          console.log('Nothing found')
+          setNews({hits: [{title: `No match for ${searchTerm}! :-(`}]});
         }
+      })
+      .catch((error) => {
+        console.log(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 
   useEffect((searchTerm)=>{
     getData(searchTerm)
   },[])
-
 
   function handleChange(event) {
     setSearchText(event.target.value);
@@ -61,6 +60,8 @@ function App() {
         </form>
       </header>
       <div className='results'>
+        {loading && <div>Loading ...</div>}
+        {error && (<div>{`There is a problem fetching the post data - ${error}`}</div>)}
         {
           news && Object.keys(news).length > 0 && news.hits.map((newsItem) =>
           <div className='news-item'>
@@ -104,3 +105,19 @@ export default App;
 //   }).catch(error => console.log(error.message));
 // };
 
+// fetch('./hackernews.json'
+// ,{
+//   headers : { 
+//     'Content-Type': 'application/json',
+//     'Accept': 'application/json'
+//    }
+// }
+//)
+
+// const filteredHits = myJson.hits.filter((newsItem) => newsItem.title.match(searchTerm) || newsItem.title.toLowerCase().match(searchTerm.toLowerCase()));
+// if (filteredHits.length !== 0) {
+//   myJson.hits= filteredHits;
+//   setNews(myJson);
+// } else {
+
+// }
