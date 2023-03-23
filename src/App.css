@@ -21,19 +21,36 @@
 }
 
 .news-item {
-  background-color: #2B54F0;
+  display: flex;
+  flex-direction: column;
   margin: 0.4rem;
   padding: 0.3rem;
-  text-align: left;
+  background-color: #2B54F0;
+}
+
+.news-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+}
+
+.author {
+  margin: 0;
+  font-size: smaller;
+  color: #333033;
 }
 
 .results-title {
+  padding: 0;
   color: #09f09C;
 }
 
 .results-date {
+  padding: 0;
   font-size: smaller;
   color: #333033;
+  text-align: right;
 }
 
 .results-tags {
@@ -44,7 +61,7 @@
   display: flex;
   justify-content: center;
   padding: 1rem;
-  background-color: #09f09C;
+  background-color: #7ae7c7;
 }
 
 .pagination {
@@ -61,6 +78,15 @@
 
 input[type='text'] {
   padding: 0.3rem;
+  border: 2px solid grey;
+  border-left: none;
+  border-radius: 5px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+input[type='text']:focus {
+  outline: none;
 }
 
 input[type='submit'] {
@@ -76,4 +102,23 @@ input[type='submit'] {
 
 h1 {
   margin-left: 0.3rem;
+}
+
+a {
+  text-decoration: none;
+}
+
+select {
+  padding: 0.3rem;
+  border: 2px solid grey;
+  border-right: none;
+  border-radius: 5px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  background-color: white;
+}
+
+#current-page {
+  background-color: grey;
+  color: white;
 }
