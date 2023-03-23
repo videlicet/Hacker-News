@@ -40,6 +40,17 @@
   background-color: red;
 }
 
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  background-color: #09f09C;
+}
+
+.pagination {
+  margin: 0 0.3rem;
+}
+
 input[type='text'] {
   padding: 0.3rem;
 }

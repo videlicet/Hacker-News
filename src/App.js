@@ -3,12 +3,17 @@ import React, { useEffect, useState } from 'react';
 
 function App() {
   const [news, setNews] = useState([]);
+  const [pageNumbers, setPageNumbers] = useState([]);
+  const [currentPageNumber, setCurrentPageNumber] = useState(0);
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [offSet, setOffSet] = useState(2);
 
-  const getData = (searchTerm) => {
-    fetch(`http://hn.algolia.com/api/v1/search?query=${searchTerm}`)
+  const getData = (searchTerm, pageNumber) => {
+    if (!pageNumber) {pageNumber = 0}
+    if (!searchTerm) {searchTerm = ''}
+    fetch(`http://hn.algolia.com/api/v1/search?query=${searchTerm}&tags=story&page=${pageNumber}&hitsPerPage=20`)
       .then(function(response) {
         if (!response.ok) {
           throw new Error(
@@ -22,22 +27,36 @@ function App() {
         console.log(myJson);
         if (myJson.hits.length !== 0) {
           setNews(myJson);
+          let pageNumbersArray = [];
+          for (let i = -offSet; i <= offSet; i++) {
+            if (pageNumber+i >= 0 && pageNumber+i <= myJson.nbPages-1 )
+            pageNumbersArray.push(pageNumber+i+1);
+          }
+          setPageNumbers(pageNumbersArray);
         } else {
           console.log('Nothing found')
           setNews({hits: [{title: `No match for ${searchTerm}! :-(`}]});
+          setPageNumbers([]);
         }
       })
-      .catch((error) => {
-        console.log(error.message);
+      .catch((e) => {
+        console.log(e.message);
+        setError(e.message);
       })
       .finally(() => {
         setLoading(false);
       });
   }
-
-  useEffect((searchTerm)=>{
-    getData(searchTerm)
+  
+  useEffect((searchTerm, pageNumber) => {
+    getData(searchTerm, pageNumber+1)
   },[])
+
+  function pageChange(event) {
+    console.log("the number is " + event.target.innerHTML)
+    setCurrentPageNumber(Number(event.target.innerHTML));
+    getData(searchText, Number(event.target.innerHTML)-1);
+  }
 
   function handleChange(event) {
     setSearchText(event.target.value);
@@ -46,8 +65,7 @@ function App() {
   function handleSubmit(event) {
     event.preventDefault();
     const searchTerm = searchText; 
-    getData(searchTerm);
-    setSearchText('');
+    getData(searchTerm, 0);
   }
 
   return (
@@ -62,14 +80,20 @@ function App() {
       <div className='results'>
         {loading && <div>Loading ...</div>}
         {error && (<div>{`There is a problem fetching the post data - ${error}`}</div>)}
-        {
-          news && Object.keys(news).length > 0 && news.hits.map((newsItem) =>
+        {news && Object.keys(news).length > 0 && news.hits.map((newsItem) =>
           <div className='news-item'>
             <a href={newsItem.url} className='results-title' target="_blank">{newsItem.title}</a><br/>
             <span className='results-date'>{newsItem.created_at}</span>
           </div>)
         }
       </div>
+     {news.nbPages !== 0 &&
+     <div className='pagination-container'>
+        {pageNumbers.map((number) => 
+          <span className='pagination' onClick={pageChange}>{number}</span>)
+        }
+      </div>
+     }
     </div>
   );
 }
@@ -77,9 +101,23 @@ function App() {
 export default App;
 
 
+
+
 /* To-Do */
 
+
 /* Trash Can */
+
+      /*  
+function pageArrayMaker() {
+let pageNumbersArray = [];
+for (let i = -offSet; i <= offSet; i++) {
+pageNumbersArray.push(currentPageNumber+i);
+}
+return pageNumbersArray;
+} 
+  */
+
 
 // interface Data {
 //   hits: [{
