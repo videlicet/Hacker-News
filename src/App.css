@@ -49,6 +49,14 @@
 
 .pagination {
   margin: 0 0.3rem;
+  padding: 0 0.4rem;
+  border: 2px solid grey;
+  border-radius: 5px;
+  background-color: azure;
+}
+
+.pagination:hover {
+  background-color: lightgrey;
 }
 
 input[type='text'] {

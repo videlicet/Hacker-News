@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react';
 
 function App() {
   const [news, setNews] = useState([]);
-  const [pageNumbers, setPageNumbers] = useState([]);
+  const [pageNumbers, setPageNumbers] = useState([[],[],[]]);
   const [currentPageNumber, setCurrentPageNumber] = useState(0);
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [offSet, setOffSet] = useState(2);
+  const [offSet, setOffSet] = useState(1);
+
 
   const getData = (searchTerm, pageNumber) => {
     if (!pageNumber) {pageNumber = 0}
@@ -27,16 +28,22 @@ function App() {
         console.log(myJson);
         if (myJson.hits.length !== 0) {
           setNews(myJson);
+          console.log(pageNumbers);
           let pageNumbersArray = [];
           for (let i = -offSet; i <= offSet; i++) {
             if (pageNumber+i >= 0 && pageNumber+i <= myJson.nbPages-1 )
             pageNumbersArray.push(pageNumber+i+1);
           }
-          setPageNumbers(pageNumbersArray);
+          if (pageNumbersArray[0] == 2) {
+            pageNumbersArray.unshift(1);
+          }
+          let firstPage = 1; 
+          let lastPage = myJson.nbPages > 0  ? myJson.nbPages-1 : 0;
+          setPageNumbers([firstPage, pageNumbersArray, lastPage]);
         } else {
           console.log('Nothing found')
           setNews({hits: [{title: `No match for ${searchTerm}! :-(`}]});
-          setPageNumbers([]);
+          setPageNumbers([[],[],[]]);
         }
       })
       .catch((e) => {
@@ -89,9 +96,13 @@ function App() {
       </div>
      {news.nbPages !== 0 &&
      <div className='pagination-container'>
-        {pageNumbers.map((number) => 
+        {pageNumbers[1][0] >= 3 && <span className='pagination' onClick={pageChange}>{pageNumbers[0]}</span>}
+        {pageNumbers[1][0] >= 3 && ' · · · '}
+        {pageNumbers[1].map((number) => 
           <span className='pagination' onClick={pageChange}>{number}</span>)
         }
+        {pageNumbers[2] !== 0 && pageNumbers[1][pageNumbers[1].length-1] < 50 && '· · ·'}
+        {pageNumbers[2] > 0 && pageNumbers[1][pageNumbers[1].length-1] < 50 && <span className='pagination' onClick={pageChange}>{pageNumbers[2]}</span>}
       </div>
      }
     </div>
@@ -101,61 +112,9 @@ function App() {
 export default App;
 
 
-
-
 /* To-Do */
 /*      
+- bei Seite 48 soll 49 nicht doppelt stehen (analog zur Regel bei erster Seite);
+- bei klick auf 49 sieht man seite 50 und kann auch auf sie klicken;
 
-/* Trash Can */
-
-      /*  
-function pageArrayMaker() {
-let pageNumbersArray = [];
-for (let i = -offSet; i <= offSet; i++) {
-pageNumbersArray.push(currentPageNumber+i);
-}
-return pageNumbersArray;
-} 
-  */
-
-
-// interface Data {
-//   hits: [{
-//     title: string
-//   }]
-// }
-
-// const fetchJson = () => {
-//   fetch('hackernews.json')
-//   // .then((response) => {
-//   //   if (!response.ok) 
-//   //     throw new Error(`Request failed with a status of ${response.status}`);
-//   //     return response.json();
-//   // })
-//   // .then((news) => {
-//   //   setNews(news);
-//   // })
-//   // .catch(error => console.log(error.message));
-//   .then(response => {
-//     return response.json();
-//   }).then(newsItem => {
-//     setNews(newsItem);
-//   }).catch(error => console.log(error.message));
-// };
-
-// fetch('./hackernews.json'
-// ,{
-//   headers : { 
-//     'Content-Type': 'application/json',
-//     'Accept': 'application/json'
-//    }
-// }
-//)
-
-// const filteredHits = myJson.hits.filter((newsItem) => newsItem.title.match(searchTerm) || newsItem.title.toLowerCase().match(searchTerm.toLowerCase()));
-// if (filteredHits.length !== 0) {
-//   myJson.hits= filteredHits;
-//   setNews(myJson);
-// } else {
-
-// }
+*/
