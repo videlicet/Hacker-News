@@ -1,5 +1,6 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
+import { Markup } from 'interweave';
 
 function App() {
   const [news, setNews] = useState([]);
@@ -11,8 +12,9 @@ function App() {
   const [error, setError] = useState(null);
   const [offSet, setOffSet] = useState(1);
 
-
   const getData = (searchTerm, pageNumber, tag) => {
+    setLoading(true);
+    setNews([]);
     let query;
     if (!pageNumber) {pageNumber = 0}
     if (!searchTerm) {searchTerm = ''}
@@ -25,10 +27,10 @@ function App() {
         query = `search?query=${searchTerm}&tags=${tag}&page=${pageNumber}`;
         break;
       case 'story-author':
-        query = `search?tags=story,author_${searchTerm}&page=${pageNumber}`;
+        query = `search?tags=story%2Cauthor_${searchTerm}&page=${pageNumber}`;
       break;
       case 'comment-author':
-        query = `search?tags=comment,author_${searchTerm}&page=${pageNumber}`;
+        query = `search?tags=comment%2Cauthor_${searchTerm}&page=${pageNumber}`;
       break;
       default:
         tag = 'story';
@@ -56,8 +58,8 @@ function App() {
           if (pageNumbersArray[0] == 2) {
             pageNumbersArray.unshift(1);
           }
-          if (pageNumbersArray[pageNumbersArray.length-1] == 49) {
-            pageNumbersArray.push(50);
+          if (pageNumbersArray[pageNumbersArray.length-1] == pageNumbers[2]-1) {
+            pageNumbersArray.push(pageNumbers[2]);
           }
           let firstPage = 1; 
           let lastPage = myJson.nbPages > 0  ? myJson.nbPages : 0;
@@ -82,9 +84,8 @@ function App() {
   },[])
 
   function pageChange(event) {
-    console.log("the number is " + event.target.innerHTML)
     setCurrentPageNumber(Number(event.target.innerHTML));
-    getData(searchText, Number(event.target.innerHTML)-1);
+    getData(searchText, Number(event.target.innerHTML)-1, searchTag);
   }
 
   function handleTextChange(event) {
@@ -126,6 +127,7 @@ function App() {
           <div className='news-item'>
             <div className='news-item-header'>
               <a href={newsItem.url} className='results-title' target="_blank">{newsItem.title}</a>
+              <div className='results-title'>{<Markup content={newsItem.comment_text}/>}</div>
               <span className='results-date'>
               {`${newsItem.created_at.substring(0, 4)}/${newsItem.created_at.substring(5, 7)}/${newsItem.created_at.substring(8, 10)}`}
               </span>
@@ -141,8 +143,8 @@ function App() {
         {pageNumbers[1].map((number) => 
           <span id={currentPageNumber == number ? 'current-page' : ''} className='pagination' onClick={pageChange}>{number}</span>)
         }
-        {pageNumbers[2] !== 0 && pageNumbers[1][pageNumbers[1].length-1] < 50 && '· · ·'}
-        {pageNumbers[2] > 0 && pageNumbers[1][pageNumbers[1].length-1] < 50 && <span className='pagination' onClick={pageChange}>{pageNumbers[2]}</span>}
+        {pageNumbers[2] !== 0 && pageNumbers[1][pageNumbers[1].length-1] < pageNumbers[2] && '· · ·'}
+        {pageNumbers[2] > 0 && pageNumbers[1][pageNumbers[1].length-1] < pageNumbers[2] && <span className='pagination' onClick={pageChange}>{pageNumbers[2]}</span>}
       </div>
      }
     </div>
@@ -154,6 +156,5 @@ export default App;
 
 /* To-Do */
 /*      
-- pagination works strangely when searching by sth else than story
-
+- make author search non sensitive
 */
