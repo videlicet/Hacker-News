@@ -8,35 +8,37 @@ function App() {
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
   const [searchText, setSearchText] = useState('');
   const [searchTag, setSearchTag] = useState('story');
+  const [searchResultsPerPage, setSearchResultsPerPage] = useState(20);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [offSet, setOffSet] = useState(1);
 
-  const getData = (searchTerm, pageNumber, tag) => {
+  const getData = (searchTerm, pageNumber, tag, resultsPerPage) => {
     setLoading(true);
     setNews([]);
     let query;
     if (!pageNumber) {pageNumber = 0}
     if (!searchTerm) {searchTerm = ''}
+    if (!resultsPerPage) {resultsPerPage = 20}
     switch(tag) {
       case false:
         tag = 'story';
-        query = `search?query=${searchTerm}&tags=${tag}&page=${pageNumber}`;
+        query = `query=${searchTerm}&tags=${tag}&page=${pageNumber}`;
         break;
       case 'comment':
-        query = `search?query=${searchTerm}&tags=${tag}&page=${pageNumber}`;
+        query = `query=${searchTerm}&tags=${tag}&page=${pageNumber}`;
         break;
       case 'story-author':
-        query = `search?tags=story%2Cauthor_${searchTerm}&page=${pageNumber}`;
+        query = `tags=story%2Cauthor_${searchTerm}&page=${pageNumber}`;
       break;
       case 'comment-author':
-        query = `search?tags=comment%2Cauthor_${searchTerm}&page=${pageNumber}`;
+        query = `tags=comment%2Cauthor_${searchTerm}&page=${pageNumber}`;
       break;
       default:
         tag = 'story';
-        query = `search?query=${searchTerm}&tags=${tag}&page=${pageNumber}`;
+        query = `query=${searchTerm}&tags=${tag}&page=${pageNumber}`;
     } 
-    fetch(`http://hn.algolia.com/api/v1/${query}&hitsPerPage=20`)
+    fetch(`http://hn.algolia.com/api/v1/search_by_date?${query}&hitsPerPage=${resultsPerPage}`)
       .then(function(response) {
         if (!response.ok) {
           throw new Error(
@@ -96,19 +98,25 @@ function App() {
     setSearchTag(event.target.value);
   }
 
+  function handleResultsPerPageChange(event) {
+    const searchTextHere = searchText;
+    const searchTagHere = searchTag;
+    const resultsPerPageHere = event.target.value;
+    getData(searchTextHere, 0, searchTagHere, resultsPerPageHere);
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
-    const searchTerm = searchText;
+    const searchTextHere = searchText;
     const searchTagHere = searchTag;
-    getData(searchTerm, 0, searchTagHere);
+    const resultsPerPageHere = searchResultsPerPage;
+    getData(searchTextHere, 0, searchTagHere, resultsPerPageHere);
   }
 
   return (
     <div className='container'>
       <header className='header'>
         <h1>Hacker News</h1>
-        <div>
-        </div>
         <form onSubmit={handleSubmit}>
           <select name='tag' onChange={handleTagChange}>
             <option value='story'>story</option>
@@ -117,22 +125,30 @@ function App() {
             <option value='comment-author'>comments by author</option>
           </select> 
           <input type='text' value={searchText} onChange={handleTextChange} />
+          <select className='results-per-page' name='results-per-page' onChange={handleResultsPerPageChange}>
+            <option value='10'>10</option>
+            <option value='20' selected='selected'>20</option>
+            <option value='30'>30</option>
+            <option value='50'>50</option>
+          </select> 
           <input type='submit' value='' />
         </form>
       </header>
       <div className='results'>
-        {loading && <div>Loading ...</div>}
+        {loading && <div className='loading'>Loading ...</div>}
         {error && (<div>{`There is a problem fetching the post data - ${error}`}</div>)}
         {news && Object.keys(news).length > 0 && news.hits.map((newsItem) =>
           <div className='news-item'>
             <div className='news-item-header'>
               {newsItem.title && <a href={newsItem.url} className='results-title' target="_blank">{newsItem.title}</a>}
-              <div className='results-title'>{<Markup content={newsItem.comment_text}/>}</div>
-              <span className='results-date'>
-              {newsItem.created_at && `${newsItem.created_at.substring(0, 4)}/${newsItem.created_at.substring(5, 7)}/${newsItem.created_at.substring(8, 10)}`}
-              </span>
+              {newsItem.comment_text && <div className='results-title'>{<Markup content={newsItem.comment_text}/>}</div>}
+              <p className='author'>{newsItem.author}</p>
             </div>
-            <p className='author'>{newsItem.author}</p>
+            <div className='results-date'>
+                {newsItem.created_at && `${newsItem.created_at.substring(0, 4)}/${newsItem.created_at.substring(5, 7)}/${newsItem.created_at.substring(8, 10)}`}
+                <br/>
+                {newsItem.created_at && `${newsItem.created_at.substring(11, 16)} UTC`}
+            </div>
           </div>)
         }
       </div>
