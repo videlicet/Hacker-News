@@ -129,7 +129,7 @@ function App() {
               {newsItem.title && <a href={newsItem.url} className='results-title' target="_blank">{newsItem.title}</a>}
               <div className='results-title'>{<Markup content={newsItem.comment_text}/>}</div>
               <span className='results-date'>
-              {`${newsItem.created_at.substring(0, 4)}/${newsItem.created_at.substring(5, 7)}/${newsItem.created_at.substring(8, 10)}`}
+              {newsItem.created_at && `${newsItem.created_at.substring(0, 4)}/${newsItem.created_at.substring(5, 7)}/${newsItem.created_at.substring(8, 10)}`}
               </span>
             </div>
             <p className='author'>{newsItem.author}</p>
