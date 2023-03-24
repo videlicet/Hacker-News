@@ -126,7 +126,7 @@ function App() {
         {news && Object.keys(news).length > 0 && news.hits.map((newsItem) =>
           <div className='news-item'>
             <div className='news-item-header'>
-              <a href={newsItem.url} className='results-title' target="_blank">{newsItem.title}</a>
+              {newsItem.title && <a href={newsItem.url} className='results-title' target="_blank">{newsItem.title}</a>}
               <div className='results-title'>{<Markup content={newsItem.comment_text}/>}</div>
               <span className='results-date'>
               {`${newsItem.created_at.substring(0, 4)}/${newsItem.created_at.substring(5, 7)}/${newsItem.created_at.substring(8, 10)}`}

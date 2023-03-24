@@ -1,6 +1,8 @@
 .container {
   min-width: 800px;
   width: 80%;
+  margin: 0rem auto 3rem auto;
+  max-width: 1200px;
 }
 
 .header {
@@ -42,8 +44,12 @@
 }
 
 .results-title {
-  padding: 0;
+  padding: 0 0.6rem 0 0;
   color: #09f09C;
+}
+
+.results-title a {
+  color: rgb(232, 65, 163);
 }
 
 .results-date {
