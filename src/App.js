@@ -99,18 +99,12 @@ function App() {
   }
 
   function handleResultsPerPageChange(event) {
-    const searchTextHere = searchText;
-    const searchTagHere = searchTag;
-    const resultsPerPageHere = event.target.value;
-    getData(searchTextHere, 0, searchTagHere, resultsPerPageHere);
+    getData(searchText, 0, searchTag, event.target.value);
   }
 
   function handleSubmit(event) {
     event.preventDefault();
-    const searchTextHere = searchText;
-    const searchTagHere = searchTag;
-    const resultsPerPageHere = searchResultsPerPage;
-    getData(searchTextHere, 0, searchTagHere, resultsPerPageHere);
+    getData(searchText, 0, searchTag, searchResultsPerPage);
   }
 
   return (
