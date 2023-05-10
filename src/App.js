@@ -38,18 +38,17 @@ function App() {
         tag = 'story';
         query = `query=${searchTerm}&tags=${tag}&page=${pageNumber}`;
     } 
-    fetch(`http://hn.algolia.com/api/v1/search_by_date?${query}&hitsPerPage=${resultsPerPage}`)
+    fetch(`https://hn.algolia.com/api/v1/search_by_date?${query}&hitsPerPage=${resultsPerPage}`)
       .then(function(response) {
         if (!response.ok) {
           throw new Error(
             `This is an HTTP error: The status is ${response.status}`
           );
         }
-        console.log(response)
         return response.json();
       })
       .then(function(myJson) {
-        console.log(myJson);
+        console.log(myJson)
         if (myJson.hits.length !== 0) {
           setNews(myJson);
           let pageNumbersArray = [];

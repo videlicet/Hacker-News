@@ -2,6 +2,10 @@
 
 A small SPA that demonstrates the use of a public API.
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/34b13691-27c0-41df-af7c-659f2716a222/deploy-status)](https://app.netlify.com/sites/hacker-news-videlicet/deploys)
+
+Site down? Let me know!
+
 ## Acknowledgements
 
 Frontend built with:
