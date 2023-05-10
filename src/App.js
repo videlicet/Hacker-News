@@ -30,10 +30,10 @@ function App() {
         break;
       case 'story-author':
         query = `tags=story%2Cauthor_${searchTerm}&page=${pageNumber}`;
-      break;
+        break;
       case 'comment-author':
         query = `tags=comment%2Cauthor_${searchTerm}&page=${pageNumber}`;
-      break;
+        break;
       default:
         tag = 'story';
         query = `query=${searchTerm}&tags=${tag}&page=${pageNumber}`;
